@@ -5,92 +5,96 @@
 #include <stdlib.h>
 #include <string.h>
 
-// define a estrutura do nó da lista
-typedef struct node {
-    char name[50];
-    struct node *next;
-} Node;
+typedef struct Amigo {
+    char nome[100];
+    struct Amigo *prox;
+} Amigo;
 
-// função que adiciona um novo nó ao fim da lista
-void addNode(Node **head, char *name) {
-    Node *newNode = (Node*) malloc(sizeof(Node));
-    strcpy(newNode->name, name);
-    newNode->next = NULL;
+Amigo *insereAmigo(Amigo *lista, char *nome) {
+    Amigo *novo = (Amigo *) malloc(sizeof(Amigo));
+    strcpy(novo->nome, nome);
+    novo->prox = NULL;
 
-    if (*head == NULL) {
-        *head = newNode;
-    } else {
-        Node *current = *head;
-        while (current->next != NULL) {
-            current = current->next;
-        }
-        current->next = newNode;
+    if (lista == NULL) {
+        return novo;
     }
+
+    Amigo *aux = lista;
+    while (aux->prox != NULL) {
+        aux = aux->prox;
+    }
+    aux->prox = novo;
+
+    return lista;
 }
 
-// função que busca o nó com o nome especificado na lista
-Node *findNode(Node *head, char *name) {
-    Node *current = head;
-    while (current != NULL) {
-        if (strcmp(current->name, name) == 0) {
-            return current;
-        }
-        current = current->next;
+Amigo *insereListaAntes(Amigo *lista, char *nome, Amigo *novaLista) {
+    if (lista == NULL) {
+        return novaLista;
     }
-    return NULL;
+
+    Amigo *aux = lista;
+    Amigo *ant = NULL;
+
+    while (aux != NULL && strcmp(aux->nome, nome) != 0) {
+        ant = aux;
+        aux = aux->prox;
+    }
+
+    if (aux != NULL) {
+        if (ant == NULL) {
+            novaLista->prox = lista;
+            return novaLista;
+        }
+        ant->prox = novaLista;
+        novaLista->prox = aux;
+    } else {
+        ant->prox = novaLista;
+    }
+
+    return lista;
+}
+
+void imprimeLista(Amigo *lista) {
+    while (lista != NULL) {
+        printf("%s ", lista->nome);
+        lista = lista->prox;
+    }
+    printf("\n");
 }
 
 int main() {
-    char luiggyList[500], newList[500], friendName[50];
-    Node *head = NULL;
+    Amigo *listaAtual = NULL;
+    char nome[100];
 
-    // lê a lista de amigos atual de Luiggy
-    fgets(luiggyList, 500, stdin);
-    char *token = strtok(luiggyList, " ");
-    while (token != NULL) {
-        addNode(&head, token);
-        token = strtok(NULL, " ");
+    scanf("%s", nome);
+    while (nome[0] != '\0') {
+        listaAtual = insereAmigo(listaAtual, nome);
+        scanf("%s", nome);
     }
 
-    // lê a nova lista de amigos
-    fgets(newList, 500, stdin);
-    token = strtok(newList, " ");
-    while (token != NULL) {
-        addNode(&head, token);
-        token = strtok(NULL, " ");
+    Amigo *novaLista = NULL;
+    scanf("%s", nome);
+    while (nome[0] != '\0') {
+        novaLista = insereAmigo(novaLista, nome);
+        scanf("%s", nome);
     }
 
-    // lê o nome do amigo para indicar a nova lista
-    fgets(friendName, 50, stdin);
-    friendName[strcspn(friendName, "\n")] = '\0'; // remove o caractere de nova linha
-    if (strcmp(friendName, "nao") != 0) {
-        // busca o nó do amigo na lista
-        Node *friendNode = findNode(head, friendName);
-        if (friendNode == NULL) {
-            printf("Amigo nao encontrado\n");
-            return 0;
+    char amigoIndicado[100];
+    scanf("%s", amigoIndicado);
+
+    if (strcmp(amigoIndicado, "nao") == 0) {
+        Amigo *aux = listaAtual;
+        while (aux->prox != NULL) {
+            aux = aux->prox;
         }
-
-        // adiciona a nova lista de amigos antes do amigo indicado
-        fgets(newList, 500, stdin);
-        token = strtok(newList, " ");
-        while (token != NULL) {
-            Node *newNode = (Node*) malloc(sizeof(Node));
-            strcpy(newNode->name, token);
-            newNode->next = friendNode;
-            friendNode = newNode;
-            token = strtok(NULL, " ");
-        }
-        head = friendNode; // atualiza o início da lista
+        aux->prox = novaLista;
+    } else {
+        listaAtual = insereListaAntes(listaAtual, amigoIndicado, novaLista);
     }
 
-    // imprime a lista atualizada
-    Node *current = head;
-    while (current != NULL) {
-        printf("%s ", current->name);
-        current = current->next;
-    }
-    printf("\n");
+    imprimeLista(listaAtual);
 
     return 0;
 }
+    
