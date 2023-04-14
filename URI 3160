@@ -1,1 +1,96 @@
-ad
+// URI 3160 - C //
+// https://www.beecrowd.com.br/judge/pt/problems/view/3160 //
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// define a estrutura do nó da lista
+typedef struct node {
+    char name[50];
+    struct node *next;
+} Node;
+
+// função que adiciona um novo nó ao fim da lista
+void addNode(Node **head, char *name) {
+    Node *newNode = (Node*) malloc(sizeof(Node));
+    strcpy(newNode->name, name);
+    newNode->next = NULL;
+
+    if (*head == NULL) {
+        *head = newNode;
+    } else {
+        Node *current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
+}
+
+// função que busca o nó com o nome especificado na lista
+Node *findNode(Node *head, char *name) {
+    Node *current = head;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+int main() {
+    char luiggyList[500], newList[500], friendName[50];
+    Node *head = NULL;
+
+    // lê a lista de amigos atual de Luiggy
+    fgets(luiggyList, 500, stdin);
+    char *token = strtok(luiggyList, " ");
+    while (token != NULL) {
+        addNode(&head, token);
+        token = strtok(NULL, " ");
+    }
+
+    // lê a nova lista de amigos
+    fgets(newList, 500, stdin);
+    token = strtok(newList, " ");
+    while (token != NULL) {
+        addNode(&head, token);
+        token = strtok(NULL, " ");
+    }
+
+    // lê o nome do amigo para indicar a nova lista
+    fgets(friendName, 50, stdin);
+    friendName[strcspn(friendName, "\n")] = '\0'; // remove o caractere de nova linha
+    if (strcmp(friendName, "nao") != 0) {
+        // busca o nó do amigo na lista
+        Node *friendNode = findNode(head, friendName);
+        if (friendNode == NULL) {
+            printf("Amigo nao encontrado\n");
+            return 0;
+        }
+
+        // adiciona a nova lista de amigos antes do amigo indicado
+        fgets(newList, 500, stdin);
+        token = strtok(newList, " ");
+        while (token != NULL) {
+            Node *newNode = (Node*) malloc(sizeof(Node));
+            strcpy(newNode->name, token);
+            newNode->next = friendNode;
+            friendNode = newNode;
+            token = strtok(NULL, " ");
+        }
+        head = friendNode; // atualiza o início da lista
+    }
+
+    // imprime a lista atualizada
+    Node *current = head;
+    while (current != NULL) {
+        printf("%s ", current->name);
+        current = current->next;
+    }
+    printf("\n");
+
+    return 0;
+}
