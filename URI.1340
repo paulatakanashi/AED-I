@@ -1,0 +1,73 @@
+// URI 1340 EM C//
+// https://www.beecrowd.com.br/judge/pt/problems/view/1340 //
+
+#include <iostream>
+#include <queue>
+#include <stack>
+using namespace std;
+
+int main() {
+    int n;
+    while (cin >> n) { // Lê o número de operações para cada caso de teste
+        bool isStack = true, isQueue = true, isPQ = true; // Inicia as variáveis booleanas para cada tipo de estrutura de dados
+        stack<int> s; // Cria uma pilha
+        queue<int> q; // Cria uma fila
+        priority_queue<int> pq; // Cria uma fila de prioridade
+
+        // Loop para executar as operações
+        for (int i = 0; i < n; i++) {
+            int op, val;
+            cin >> op; // Lê o tipo de operação
+            if (op == 1) {
+                cin >> val; // Lê o valor a ser adicionado
+                s.push(val); // Adiciona o valor na pilha
+                q.push(val); // Adiciona o valor na fila
+                pq.push(val); // Adiciona o valor na fila de prioridade
+            } else {
+                if (s.empty()) { // Se a pilha estiver vazia, não é uma pilha
+                    isStack = false;
+                } else {
+                    int top = s.top(); // Pega o valor do topo da pilha
+                    s.pop(); // Remove o valor do topo da pilha
+                    if (val != top) { // Se o valor lido for diferente do topo da pilha, não é uma pilha
+                        isStack = false;
+                    }
+                }
+
+                if (q.empty()) { // Se a fila estiver vazia, não é uma fila
+                    isQueue = false;
+                } else {
+                    int front = q.front(); // Pega o valor da frente da fila
+                    q.pop(); // Remove o valor da frente da fila
+                    if (val != front) { // Se o valor lido for diferente da frente da fila, não é uma fila
+                        isQueue = false;
+                    }
+                }
+
+                if (pq.empty()) { // Se a fila de prioridade estiver vazia, não é uma fila de prioridade
+                    isPQ = false;
+                } else {
+                    int top = pq.top(); // Pega o valor do topo da fila de prioridade
+                    pq.pop(); // Remove o valor do topo da fila de prioridade
+                    if (val != top) { // Se o valor lido for diferente do topo da fila de prioridade, não é uma fila de prioridade
+                        isPQ = false;
+                    }
+                }
+            }
+        }
+
+        // Verifica qual é a estrutura de dados
+        if (isStack && !isQueue && !isPQ) { // Se é apenas uma pilha
+            cout << "stack\n";
+        } else if (!isStack && isQueue && !isPQ) { // Se é apenas uma fila
+            cout << "queue\n";
+        } else if (!isStack && !isQueue && isPQ) { // Se é apenas uma fila de prioridade
+            cout << "priority queue\n";
+        } else if (!isStack && !isQueue && !isPQ) { // Se não é nenhuma das três
+            cout << "impossible\n";
+        } else { // Se é mais de uma das três
+            cout << "not sure\n";
+        }
+    }
+    return 0;
+}
