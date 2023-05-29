@@ -1,0 +1,62 @@
+
+
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_CITIES 1000
+#define MAX_ROUTES (MAX_CITIES * (MAX_CITIES - 1) / 2)
+
+int graph[MAX_CITIES][MAX_CITIES];
+int visited[MAX_CITIES];
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+void dfs(int current_city, int destination_city, int forbidden_city, int current_time, int *min_time) {
+    if (current_city == destination_city) {
+        *min_time = min(*min_time, current_time);
+        return;
+    }
+    
+    visited[current_city] = true;
+    
+    for (int i = 0; i < MAX_CITIES; i++) {
+        if (graph[current_city][i] && !visited[i] && i != forbidden_city) {
+            dfs(i, destination_city, forbidden_city, current_time + 1, min_time);
+        }
+    }
+    
+    visited[current_city] = false;
+}
+
+int main() {
+    int n, m;
+    
+    while (scanf("%d %d", &n, &m) != EOF) {
+        // Initialize graph and visited array
+        for (int i = 0; i < MAX_CITIES; i++) {
+            for (int j = 0; j < MAX_CITIES; j++) {
+                graph[i][j] = 0;
+            }
+            visited[i] = false;
+        }
+        
+        // Read routes
+        for (int i = 0; i < m; i++) {
+            int a, b;
+            scanf("%d %d", &a, &b);
+            graph[a][b] = graph[b][a] = 1;
+        }
+        
+        int curytiba, riacho, estadunido;
+        scanf("%d %d %d", &curytiba, &riacho, &estadunido);
+        
+        int min_time = MAX_CITIES + 1;
+        dfs(curytiba, riacho, estadunido, 0, &min_time);
+        
+        printf("%d\n", min_time);
+    }
+    
+    return 0;
+}
