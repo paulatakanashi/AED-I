@@ -1,0 +1,107 @@
+// Nome: Paula Takanashi
+// RA: 163963
+
+
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
+
+
+struct regNo {
+    struct regNo *esq;
+    int valor;
+    struct regNo *dir;
+};
+typedef struct regNo TArv;
+
+int tipo;
+
+TArv * AchaPai(TArv *r, int v){
+    if(r == NULL) /* Arvore vazia */
+		return NULL;
+	else
+		if(v <= r->valor) /* Novo nó deve ficar a esquerda de r */
+			if(r->esq == NULL)
+				return r;
+			else
+				return AchaPai(r->esq, v);
+		else /* Novo nó deve ficar a direita de r */
+			if(r->dir == NULL)
+				return r;
+			else
+				return AchaPai(r->dir, v);
+}
+
+int ImpArvore(TArv *r){
+	if(r != NULL){
+		if(tipo == 1){
+			printf(" %d", r->valor);
+			ImpArvore(r->esq);
+			ImpArvore(r->dir);
+		}
+		if(tipo == 2){
+			ImpArvore(r->esq);
+			printf(" %d", r->valor);
+			ImpArvore(r->dir);
+		}
+		if(tipo == 3){
+			ImpArvore(r->esq);
+			ImpArvore(r->dir);
+			printf(" %d", r->valor);
+		}
+	}
+
+	return 0;
+}
+
+int main(){
+    TArv *raiz, *pai, *aux;
+	int tam, Ncasos, n, d, no;
+
+	raiz = NULL;
+	scanf("%d", &Ncasos);
+
+	for(n=1; n<=Ncasos; n++){
+		raiz = NULL;
+
+		scanf("%d", &tam);
+		for(d=0; d<tam; d++)
+		{
+			scanf("%d", &no);
+
+			aux = (TArv *) malloc(sizeof(TArv));
+			aux->valor = no;
+			aux->esq = NULL;
+			aux->dir = NULL;
+
+			pai = AchaPai(raiz, no);
+			if(pai == NULL)
+				raiz = aux;
+			else
+				if(no <= pai->valor)
+					pai->esq = aux;
+				else
+					pai->dir = aux;
+		}
+
+		printf("Case %d:", n);
+
+		printf("\nPre.:");
+		tipo = 1;
+		ImpArvore(raiz);
+
+		printf("\nIn..:");
+		tipo = 2;
+		ImpArvore(raiz);
+
+		printf("\nPost:");
+		tipo = 3;
+		ImpArvore(raiz);
+
+		printf("\n\n");
+
+	}
+
+	return 0;
+}
